@@ -5,6 +5,11 @@ Displays the key input and mouse button state on Windows on the screen.
 
 use AutoHotKey v1.1.24.05
 
+Screenshot
+----------
+
+![Screenshot](img/screenshot.gif)
+
 System Requirements
 -------------------
 
