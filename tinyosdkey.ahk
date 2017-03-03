@@ -10,7 +10,7 @@
 CoordMode, Mouse, Screen
 
 appliname=tinyosdkey
-appliver=1.0.0
+appliver=1.0.1
 wtitle=%appliname% %appliver%
 inifn=%A_ScriptDir%\%appliname%.ini
 
@@ -52,7 +52,7 @@ Loop, Parse, keystr, %A_space%
 
 ; GUI settings
 
-Gui, +Owner +AlwaysOnTop +Resize -SysMenu -MinimizeBox -MaximizeBox -Disabled -Caption -Border -ToolWindow
+Gui, +Owner +AlwaysOnTop -Resize -SysMenu -MinimizeBox -MaximizeBox -Disabled -Caption -Border -ToolWindow
 ; Gui, +Owner +AlwaysOnTop +Resize
 
 Gui, Margin, 8, 0
