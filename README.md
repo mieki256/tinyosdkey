@@ -13,12 +13,24 @@ Screenshot
 System Requirements
 -------------------
 
-Windows10 x64
+Windows XP 32bit / Windows 7 SP1 64bit / Windows 10 64bit
+
+Install and run
+---------------
+
+Extract zip and run tinyosdkey.exe .
+
+tinyosdkey.ini is generated at the initial startup. Edit ini to change setting.
+
+Uninstall
+---------
+
+Delete the folder. Registry is unused.
 
 To Exe
 ------
 
-Run ahk2exe.exe. Specify source file or output file.
+Run Ahk2Exe.exe. Specify source file and output file. Ahk2Exe is bundled with AutoHotkey.
 
 License
 -------
