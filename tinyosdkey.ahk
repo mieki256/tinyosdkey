@@ -7,10 +7,11 @@
  
 #SingleInstance, Force
 #InstallMouseHook
+#InstallKeybdHook
 CoordMode, Mouse, Screen
 
 appliname=tinyosdkey
-appliver=1.0.1
+appliver=1.0.2
 wtitle=%appliname% %appliver%
 inifn=%A_ScriptDir%\%appliname%.ini
 
@@ -50,12 +51,18 @@ Loop, Parse, keystr, %A_space%
   oldstate.Insert(k, 0)
 }
 
+; set context menu
+Menu, ctmenu, Add, %wtitle%, Settings
+Menu, ctmenu, Add,
+Menu, ctmenu, Add, Settings, Settings
+Menu, ctmenu, Add, Exit, EXIT
+
 ; GUI settings
 
 Gui, +Owner +AlwaysOnTop -Resize -SysMenu -MinimizeBox -MaximizeBox -Disabled -Caption -Border -ToolWindow
 ; Gui, +Owner +AlwaysOnTop +Resize
 
-Gui, Margin, 8, 0
+Gui, Margin, 8, 8
 Gui, Color, %bgcol%
 
 cdir=%A_ScriptDir%\%imgdir%
@@ -66,16 +73,27 @@ Gui, Add, Picture, %opt% vIconMMB, %cdir%\mouseicon_002.png
 Gui, Add, Picture, %opt% vIconRMB, %cdir%\mouseicon_003.png
 
 Gui, Font, C%fgcol% S%fontsize% W%fontweight% Q2, %fontname%
-Gui, Add, Text, x+4 yp+0 Vkeytext, Ctrl + Shift + Alt + Win + NumpadClear
+s=Ctrl + Shift + Alt + Win + NumpadClear
+Gui, Add, Text, x+4 yp+4 Vkeytext, %s%
+
+fsz := fontsize / 2
+Gui, Font, C%fgcol% S%fsz% W%fontweight% Q2, %fontname%
+Gui, Add, Text, xp+0 y+4 Vkeytext1, %s%
+Gui, Add, Text, xp+0 y+2 Vkeytext2, %s%
+Gui, Add, Text, xp+0 y+2 Vkeytext3, %s%
+Gui, Add, Text, xp+0 y+2 Vkeytext4, %s%
 Gui, Show, X%posx% Y%posy% NoActivate, %wtitle%
 
-GuiControl, , keytext, Ctrl+Alt+Q : Exit
+GuiControl, , keytext, ( Ctrl+Alt+Q : Exit )
+GuiControl, , keytext1,
+GuiControl, , keytext2,
+GuiControl, , keytext3,
+GuiControl, , keytext4,
 GuiControl, Hide, IconLMB
 GuiControl, Hide, IconMMB
 GuiControl, Hide, IconRMB
 
 WinSet, Transparent, %transparentv%, %wtitle%
-
 
 cwheeldown = 0
 cwheelup = 0
@@ -83,17 +101,22 @@ check_cwheeldown = 0
 check_cwheelup = 0
 
 mods=
-keys=
-
 oldmods=
+keys=
 oldkeys=
+nowkeys=
+nowkeys_cnt=0
 
 modshold=0
 btnshold=0
 keyshold=0
 
-holdv=0
-activefg=0
+keyshistory := Object()
+keyshiscnt=5
+Loop, %keyshiscnt%
+{
+  keyshistory.Insert(A_Index, "")
+}
 
 Loop, 
 {
@@ -169,6 +192,7 @@ Loop,
   btnshold=%cnt%
   
   ; normal key check
+  pushkeyfg=0
   cnt=0
   For k, v in keylist
   {
@@ -184,15 +208,24 @@ Loop,
         ; pushed key
         keys=%keys% %v%
         req=1
+        pushkeyfg+=1
       }
   }
   keyshold=%cnt%
   keys := Trim(keys, " ")
+  
+  if pushkeyfg<>0
+    Gosub, PushKeysHistory
 
   If keys<>%oldkeys%
     If req<>0
     {
       GuiControl, , keytext, %keys%
+      Loop, % (keyshiscnt - 1)
+      {
+        s := keyshistory[A_Index]
+        GuiControl, , keytext%A_Index%, %s%
+      }
       SetTimer, StatusOff, %dispofftime%
     }
   
@@ -204,6 +237,25 @@ Loop,
 EXIT:
 GuiClose:
   ExitApp
+
+PushKeysHistory:
+  If nowkeys<>%keys%
+  {
+    Loop, % (keyshiscnt - 1)
+    {
+      i := (keyshiscnt - A_Index)
+      keyshistory[(i+1)] := keyshistory[i]
+    }
+    keyshistory[1] := keys
+    nowkeys_cnt := 1
+  }
+  Else
+  {
+    nowkeys_cnt += 1
+    keyshistory[1] := nowkeys . " x " . nowkeys_cnt
+  }
+  nowkeys := keys
+  Return
   
 StatusOff:
   If (btnshold=0 && modshold=0)
@@ -319,6 +371,10 @@ InitTrayMenu:
   ; Menu, Tray, Add, &About, Settings
   Menu, Tray, Add, Exit, EXIT
   Menu, Tray, Tip, %wtitle%
+  Return
+
+GuiContextMenu:
+  Menu, ctmenu, Show, %A_GuiX%, %A_GuiY%
   Return
   
 ~*WheelDown::
