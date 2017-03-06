@@ -32,8 +32,42 @@ To Exe
 
 Run Ahk2Exe.exe. Specify source file and output file. Ahk2Exe is bundled with AutoHotkey.
 
+Style example
+-------------
+
+You can change the style by editing tinyosdkey.ini .
+
+![Style 1](img/screenshot_style1.png)
+
+    ...
+    transparentv=200
+    bgtransparent=0
+    bgcol=336699
+    fgcol=FFFFFF
+    iconkind=
+    ...
+
+![Style 2](img/screenshot_style2.png)
+
+    ...
+    transparentv=OFF
+    bgtransparent=1
+    bgcol=000000
+    fgcol=FFFFFF
+    iconkind=
+    ...
+
+![Style 3](img/screenshot_style3.png)
+
+    ...
+    transparentv=OFF
+    bgtransparent=1
+    bgcol=FFFFFF
+    fgcol=000000
+    iconkind=b_
+    ...
+
 License
 -------
 
 CC0 / Public Domain
-

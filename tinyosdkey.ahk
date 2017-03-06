@@ -11,7 +11,7 @@
 CoordMode, Mouse, Screen
 
 appliname=tinyosdkey
-appliver=1.0.2
+appliver=1.0.3
 wtitle=%appliname% %appliver%
 inifn=%A_ScriptDir%\%appliname%.ini
 
@@ -65,12 +65,12 @@ Gui, +Owner +AlwaysOnTop -Resize -SysMenu -MinimizeBox -MaximizeBox -Disabled -C
 Gui, Margin, 8, 8
 Gui, Color, %bgcol%
 
-cdir=%A_ScriptDir%\%imgdir%
+iconname=%A_ScriptDir%\%imgdir%\%iconkind%mouseicon
 opt=X0 Y0 AltSubmit BackgroundTrans
-Gui, Add, Picture, %opt% vIconBas, %cdir%\mouseicon_000.png
-Gui, Add, Picture, %opt% vIconLMB, %cdir%\mouseicon_001.png
-Gui, Add, Picture, %opt% vIconMMB, %cdir%\mouseicon_002.png
-Gui, Add, Picture, %opt% vIconRMB, %cdir%\mouseicon_003.png
+Gui, Add, Picture, %opt% vIconBas, %iconname%_000.png
+Gui, Add, Picture, %opt% vIconLMB, %iconname%_001.png
+Gui, Add, Picture, %opt% vIconMMB, %iconname%_002.png
+Gui, Add, Picture, %opt% vIconRMB, %iconname%_003.png
 
 Gui, Font, C%fgcol% S%fontsize% W%fontweight% Q2, %fontname%
 s=Ctrl + Shift + Alt + Win + NumpadClear
@@ -93,7 +93,15 @@ GuiControl, Hide, IconLMB
 GuiControl, Hide, IconMMB
 GuiControl, Hide, IconRMB
 
-WinSet, Transparent, %transparentv%, %wtitle%
+If bgtransparent<>0
+{
+  WinSet, Transparent, OFF, %wtitle%
+  WinSet, TransColor, %bgcol% 255, %wtitle%
+}
+Else
+{
+  WinSet, Transparent, %transparentv%, %wtitle%
+}
 
 cwheeldown = 0
 cwheelup = 0
@@ -304,7 +312,10 @@ ReadIniFile:
   IniRead, fontweight, %inifn%, Settings, fontweight
   IniRead, fontsize, %inifn%, Settings, fontsize
   IniRead, imgdir, %inifn%, Settings, imgdir
+  IniRead, iconkind, %inifn%, Settings, iconkind
   IniRead, keystr, %inifn%, Settings, keys
+  
+  IniRead, bgtransparent, %inifn%, Settings, bgtransparent
   Return
 
 InitDefaultIni:
@@ -313,13 +324,29 @@ InitDefaultIni:
   inis=%inis%[Settings]`n
   inis=%inis%dispofftime=1000`n
   inis=%inis%`n
-  inis=%inis%; 0 is transparent. 255 is opaque`n
+  inis=%inis%; transparentv : 0 is transparent. 255 is opaque. or OFF`n
+  inis=%inis%; bgtransparent : 0 is bg not transparent. 1 is bg transparent.`n
+  inis=%inis%`n
   inis=%inis%transparentv=200`n
+  inis=%inis%bgtransparent=0`n
+  inis=%inis%bgcol=336699`n
+  inis=%inis%fgcol=FFFFFF`n
+  inis=%inis%iconkind=`n
+  inis=%inis%`n
+  inis=%inis%;transparentv=OFF`n
+  inis=%inis%;bgtransparent=1`n
+  inis=%inis%;bgcol=000000`n
+  inis=%inis%;fgcol=FFFFFF`n
+  inis=%inis%;iconkind=`n
+  inis=%inis%`n
+  inis=%inis%;transparentv=OFF`n
+  inis=%inis%;bgtransparent=1`n
+  inis=%inis%;bgcol=FFFFFF`n
+  inis=%inis%;fgcol=000000`n
+  inis=%inis%;iconkind=b_`n
   inis=%inis%`n
   inis=%inis%posx=64`n
   inis=%inis%posy=96`n
-  inis=%inis%bgcol=336699`n
-  inis=%inis%fgcol=FFFFFF`n
   inis=%inis%fontsize=22`n
   inis=%inis%fontweight=700`n
   inis=%inis%;fontweight=400`n
@@ -355,7 +382,7 @@ InitDefaultIni:
   ; write .ini file
   FileAppend, %inis%, %inifn%
   Return
-    
+
 Settings:
   Gosub, ReadIniFile
   Run, %inifn%
